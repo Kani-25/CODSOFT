@@ -1,65 +1,108 @@
+//#TASK 1
 import java.util.Random;
 import java.util.Scanner;
 
 public class UniqueNumberGuessingGame {
+    private int low = 1;
+    private int high = 100;
+    private int maxAttempts = 7;
+    private int score = 0;
+    private int roundsPlayed = 0;
+    private Random random = new Random();
+    private Scanner scanner = new Scanner(System.in);
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        Random random = new Random();
-        int totalScore = 0;
-        String playAgain;
+    private int generateNumber() {
+        return random.nextInt(high - low + 1) + low;
+    }
 
-        do {
-            int numberToGuess = generateRandomNumber(1, 100); // Generate a random number
-            int maxAttempts = 7; // Number of attempts
-            int attempts = 0;
-            boolean hasGuessedCorrectly = false;
+    private int calculateScore(int attempts, double roundTime) {
+        int maxScore = 1000;
+        double timeFactor = Math.max(0, 1 - (roundTime / 60)); // Penalize if round takes more than 60 seconds
+        double attemptFactor = (double) (maxAttempts - attempts + 1) / maxAttempts;
+        return (int) (maxScore * attemptFactor * timeFactor);
+    }
 
-            System.out.println("Welcome to the Number Guessing Game!");
-            System.out.println("Try to guess the number between 1 and 100. You have " + maxAttempts + " attempts.");
+    private boolean playRound() {
+        int target = generateNumber();
+        System.out.printf("\nI'm thinking of a number between %d and %d.%n", low, high);
+        System.out.printf("You have %d attempts to guess it.%n", maxAttempts);
 
-            while (attempts < maxAttempts) {
-                System.out.print("Enter your guess: ");
-                int userGuess;
-                
-                try {
-                    userGuess = Integer.parseInt(scanner.nextLine());
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid input. Please enter a valid integer.");
-                    continue;
-                }
+        int attempts = 0;
+        long startTime = System.currentTimeMillis();
 
-                attempts++;
-                
-                // Provide feedback based on user's guess
-                if (userGuess < numberToGuess) {
-                    System.out.println("Your guess is too low.");
-                } else if (userGuess > numberToGuess) {
-                    System.out.println("Your guess is too high.");
-                } else {
-                    System.out.println("Congratulations! You guessed the correct number " + numberToGuess + " in " + attempts + " attempts.");
-                    totalScore += (maxAttempts - attempts + 1); // Score calculation
-                    hasGuessedCorrectly = true;
-                    break;
-                }
+        while (attempts < maxAttempts) {
+            System.out.print("Enter your guess: ");
+            String input = scanner.nextLine();
+
+            int guess;
+            try {
+                guess = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number.");
+                continue;
             }
 
-            if (!hasGuessedCorrectly) {
-                System.out.println("Sorry, you have used all " + maxAttempts + " attempts. The number was " + numberToGuess + ".");
+            attempts++;
+
+            if (guess == target) {
+                double roundTime = (System.currentTimeMillis() - startTime) / 1000.0;
+                int roundScore = calculateScore(attempts, roundTime);
+                score += roundScore;
+                System.out.printf("Congratulations! You guessed the number in %d attempts.%n", attempts);
+                System.out.printf("Round score: %d%n", roundScore);
+                return true;
+            } else if (guess < target) {
+                System.out.println("Too low!");
+            } else {
+                System.out.println("Too high!");
             }
+
+            int remaining = maxAttempts - attempts;
+            if (remaining > 0) {
+                System.out.printf("You have %d %s left.%n", remaining, remaining == 1 ? "attempt" : "attempts");
+            }
+        }
+
+        System.out.printf("Sorry, you've run out of attempts. The number was %d.%n", target);
+        return false;
+    }
+
+    private void adjustDifficulty() {
+        roundsPlayed++;
+        if (roundsPlayed % 3 == 0) {
+            high += 50;
+            maxAttempts = Math.max(3, maxAttempts - 1);
+            System.out.printf("\nDifficulty increased! Range is now 1-%d, and you have %d attempts.%n", high, maxAttempts);
+        }
+    }
+
+    public void run() {
+        System.out.println("Welcome to the Unique Number Guessing Game!");
+        System.out.println("Can you guess the number I'm thinking of?");
+
+        while (true) {
+            boolean roundWon = playRound();
+            if (roundWon) {
+                adjustDifficulty();
+            }
+
+            System.out.printf("Your current score: %d%n", score);
 
             System.out.print("Do you want to play another round? (yes/no): ");
-            playAgain = scanner.nextLine();
+            String playAgain = scanner.nextLine().toLowerCase();
+            if (!playAgain.equals("yes")) {
+                break;
+            }
+        }
 
-        } while (playAgain.equalsIgnoreCase("yes"));
-
-        System.out.println("Your final score is: " + totalScore);
+        System.out.printf("\nGame Over! Your final score is %d%n", score);
+        System.out.printf("You played %d rounds.%n", roundsPlayed);
+        System.out.println("Thanks for playing!");
         scanner.close();
     }
 
-    // Method to generate a random number within a specified range
-    private static int generateRandomNumber(int min, int max) {
-        Random random = new Random();
-        return random.nextInt(max - min + 1) + min;
+    public static void main(String[] args) {
+        UniqueNumberGuessingGame game = new UniqueNumberGuessingGame();
+        game.run();
     }
 }
