@@ -1,108 +1,165 @@
-//#TASK 1
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.Random;
+
+public class Mainn {
+    public static void main(String[] args) throws Exception {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        Random random = new Random();
+        int val = random.nextInt(101);
+        int count = 0;
+        for (int i = 0; i < 10; i++) {
+            String choice = "yes";
+            while (choice.equals("yes")) {
+                System.out.println("guess the number between (0 to 100)");
+                int num = Integer.parseInt(reader.readLine());
+                if (num >= 101) {
+                    System.out.println("Wrong Input");
+                    break;
+                }
+                if (val > num) {
+                    System.out.println("Guess little higher");
+                } else if (val < num) {
+                    System.out.println("Guess little lower");
+                } else if (val == num) {
+                    count++;
+                    System.out.println("congratulations you won the game");
+                    System.out.println("your score:" + count);
+                    System.out.println("Are you want to play again(yes/no)");
+                    choice = reader.readLine().toLowerCase();
+                    if (choice.equals("no")) {
+                        i = 10;
+                        break;
+                    }
+                    while (!choice.equals("no") && !choice.equals("yes")) {
+                        System.out.println("enter the correct input(yes/no)");
+                        choice = reader.readLine().toLowerCase();
+                    }
+                    if (choice.equals("yes")) {
+                        val = random.nextInt(101);
+                    }
+                }
+            }
+        }
+    }
+}    
+//TASK 2
 import java.util.Scanner;
 
-public class UniqueNumberGuessingGame {
-    private int low = 1;
-    private int high = 100;
-    private int maxAttempts = 7;
-    private int score = 0;
-    private int roundsPlayed = 0;
-    private Random random = new Random();
-    private Scanner scanner = new Scanner(System.in);
-
-    private int generateNumber() {
-        return random.nextInt(high - low + 1) + low;
-    }
-
-    private int calculateScore(int attempts, double roundTime) {
-        int maxScore = 1000;
-        double timeFactor = Math.max(0, 1 - (roundTime / 60)); // Penalize if round takes more than 60 seconds
-        double attemptFactor = (double) (maxAttempts - attempts + 1) / maxAttempts;
-        return (int) (maxScore * attemptFactor * timeFactor);
-    }
-
-    private boolean playRound() {
-        int target = generateNumber();
-        System.out.printf("\nI'm thinking of a number between %d and %d.%n", low, high);
-        System.out.printf("You have %d attempts to guess it.%n", maxAttempts);
-
-        int attempts = 0;
-        long startTime = System.currentTimeMillis();
-
-        while (attempts < maxAttempts) {
-            System.out.print("Enter your guess: ");
-            String input = scanner.nextLine();
-
-            int guess;
-            try {
-                guess = Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                System.out.println("Please enter a valid number.");
-                continue;
-            }
-
-            attempts++;
-
-            if (guess == target) {
-                double roundTime = (System.currentTimeMillis() - startTime) / 1000.0;
-                int roundScore = calculateScore(attempts, roundTime);
-                score += roundScore;
-                System.out.printf("Congratulations! You guessed the number in %d attempts.%n", attempts);
-                System.out.printf("Round score: %d%n", roundScore);
-                return true;
-            } else if (guess < target) {
-                System.out.println("Too low!");
-            } else {
-                System.out.println("Too high!");
-            }
-
-            int remaining = maxAttempts - attempts;
-            if (remaining > 0) {
-                System.out.printf("You have %d %s left.%n", remaining, remaining == 1 ? "attempt" : "attempts");
-            }
-        }
-
-        System.out.printf("Sorry, you've run out of attempts. The number was %d.%n", target);
-        return false;
-    }
-
-    private void adjustDifficulty() {
-        roundsPlayed++;
-        if (roundsPlayed % 3 == 0) {
-            high += 50;
-            maxAttempts = Math.max(3, maxAttempts - 1);
-            System.out.printf("\nDifficulty increased! Range is now 1-%d, and you have %d attempts.%n", high, maxAttempts);
-        }
-    }
-
-    public void run() {
-        System.out.println("Welcome to the Unique Number Guessing Game!");
-        System.out.println("Can you guess the number I'm thinking of?");
-
-        while (true) {
-            boolean roundWon = playRound();
-            if (roundWon) {
-                adjustDifficulty();
-            }
-
-            System.out.printf("Your current score: %d%n", score);
-
-            System.out.print("Do you want to play another round? (yes/no): ");
-            String playAgain = scanner.nextLine().toLowerCase();
-            if (!playAgain.equals("yes")) {
-                break;
-            }
-        }
-
-        System.out.printf("\nGame Over! Your final score is %d%n", score);
-        System.out.printf("You played %d rounds.%n", roundsPlayed);
-        System.out.println("Thanks for playing!");
-        scanner.close();
-    }
-
+public class CustomGradeCalculator {
     public static void main(String[] args) {
-        UniqueNumberGuessingGame game = new UniqueNumberGuessingGame();
-        game.run();
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of subjects: ");
+        int numSubjects = scanner.nextInt();
+
+        int[] marks = new int[numSubjects];
+
+        for (int i = 0; i < numSubjects; i++) {
+            System.out.print("Enter marks for subject " + (i + 1) + ": ");
+            marks[i] = scanner.nextInt();
+        }
+
+        int totalMarks = 0;
+        for (int mark : marks) {
+            totalMarks += mark;
+        }
+
+        double averagePercentage = (double) totalMarks / numSubjects;
+
+        String grade;
+        if (averagePercentage >= 90) {
+            grade = "A+";
+        } else if (averagePercentage >= 85) {
+            grade = "A";
+        } else if (averagePercentage >= 80) {
+            grade = "B+";
+        } else if (averagePercentage >= 75) {
+            grade = "B";
+        } else if (averagePercentage >= 70) {
+            grade = "C+";
+        } else if (averagePercentage >= 65) {
+            grade = "C";
+        } else if (averagePercentage >= 60) {
+            grade = "D+";
+        } else {
+            grade = "F";
+        }
+
+        System.out.println("Total Marks: " + totalMarks);
+        System.out.println("Average Percentage: " + String.format("%.2f", averagePercentage) + "%");
+        System.out.println("Grade: " + grade);
     }
 }
+//TASK 3
+
+import java.util.*;
+
+class Atm_project {
+    public static void main(String[] args) {
+        int pin = 1234;
+        int balance = 100000;
+        int deposit = 0;
+        int withdraw = 0;
+        String name;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("enter your pin number");
+        int password = scanner.nextInt();// shift+alt+f
+        if (password == pin) {
+            System.out.println("enter your name:");
+            name = scanner.next();// already string given
+            System.out.println("Welcome" + name);
+            while (true) {
+                System.out.println("press 1 to check your balance");
+                System.out.println("press 2 to deposit");
+
+                System.out.println("press 3 to withdraw");
+                System.out.println("press 4 to take recipet");
+                System.out.println("press 5 to EXIT");
+                int opt = scanner.nextInt();
+                switch (opt) {
+                    case 1:
+                        System.out.println("your current balance is " + balance);
+                        break;
+                    case 2:
+                        System.out.println("how much amount you want to deposit");
+                        deposit = scanner.nextInt();
+                        System.out.println("Successfully credited");
+                        balance = balance + deposit;
+                        break;
+                    case 3:
+                        System.out.println("how much amount you want to withdraw");
+                        withdraw = scanner.nextInt();
+                        if (withdraw > balance) {
+                            System.out.println("withdraw failed");
+                            System.out.println("try within your balance:");
+                        } else {
+                            System.out.println("Successfully taken");
+                            balance = balance - withdraw;
+                        }
+                        break;
+                    case 4:
+                        System.out.println("Welcome guys");
+                        System.out.println("balance is:" + balance);
+                        System.out.println("deposited:" + deposit);
+                        System.out.println("withdrawn:" + withdraw);
+                        System.out.println("Thanks for coming guys");
+                        break;
+
+                    case 5:
+                        System.out.println("Thank you! Have a great day."); // Corrected: Improved exit message
+                        scanner.close(); // Corrected: Added scanner close to avoid resource leak
+                        return; // Corrected: Used return to exit the program
+
+                    default:
+                        System.out.println("Invalid option. Please try again."); // Corrected: Added default case to
+                                                                                 // handle invalid options
+                }
+            }
+        } else {
+            System.out.println("Wrong pin number. Access denied."); // Corrected: Improved error message for wrong pin
+        }
+    }
+}
+
+
