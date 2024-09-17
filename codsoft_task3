@@ -1,0 +1,71 @@
+
+//TASK 3
+
+import java.util.*;
+
+class Atm_project {
+    public static void main(String[] args) {
+        int pin = 1234;
+        int balance = 100000;
+        int deposit = 0;
+        int withdraw = 0;
+        String name;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("enter your pin number");
+        int password = scanner.nextInt();// shift+alt+f
+        if (password == pin) {
+            System.out.println("enter your name:");
+            name = scanner.next();// already string given
+            System.out.println("Welcome" + name);
+            while (true) {
+                System.out.println("press 1 to check your balance");
+                System.out.println("press 2 to deposit");
+
+                System.out.println("press 3 to withdraw");
+                System.out.println("press 4 to take recipet");
+                System.out.println("press 5 to EXIT");
+                int opt = scanner.nextInt();
+                switch (opt) {
+                    case 1:
+                        System.out.println("your current balance is " + balance);
+                        break;
+                    case 2:
+                        System.out.println("how much amount you want to deposit");
+                        deposit = scanner.nextInt();
+                        System.out.println("Successfully credited");
+                        balance = balance + deposit;
+                        break;
+                    case 3:
+                        System.out.println("how much amount you want to withdraw");
+                        withdraw = scanner.nextInt();
+                        if (withdraw > balance) {
+                            System.out.println("withdraw failed");
+                            System.out.println("try within your balance:");
+                        } else {
+                            System.out.println("Successfully taken");
+                            balance = balance - withdraw;
+                        }
+                        break;
+                    case 4:
+                        System.out.println("Welcome guys");
+                        System.out.println("balance is:" + balance);
+                        System.out.println("deposited:" + deposit);
+                        System.out.println("withdrawn:" + withdraw);
+                        System.out.println("Thanks for coming guys");
+                        break;
+
+                    case 5:
+                        System.out.println("Thank you! Have a great day."); // Corrected: Improved exit message
+                        scanner.close(); // Corrected: Added scanner close to avoid resource leak
+                        return; // Corrected: Used return to exit the program
+
+                    default:
+                        System.out.println("Invalid option. Please try again."); // Corrected: Added default case to
+                                                                                 // handle invalid options
+                }
+            }
+        } else {
+            System.out.println("Wrong pin number. Access denied."); // Corrected: Improved error message for wrong pin
+        }
+    }
+}
